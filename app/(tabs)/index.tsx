@@ -1,14 +1,69 @@
-import { StyleSheet } from 'react-native';
+import { StyleSheet, ActivityIndicator, FlatList, Image, Pressable } from "react-native";
+import { Text, View } from "../../components/Themed";
+import { useEffect, useState } from "react";
+import { Link } from "expo-router";
 
-import EditScreenInfo from '../../components/EditScreenInfo';
-import { Text, View } from '../../components/Themed';
+type Place = {
+  id: string;
+  slug: string;
+  title: {
+    rendered: string;
+  };
+  region: string[];
+  x_featured_media_medium: string;
+};
 
-export default function TabOneScreen() {
+const baseUrl = process.env.EXPO_PUBLIC_BASE_URL;
+
+export default function Places() {
+  const [isLoading, setLoading] = useState(true);
+  const [data, setData] = useState<Place[]>([]);
+
+  const getPlaces = async () => {
+    try {
+      const response = await fetch(`${baseUrl}/places`);
+      const places = await response.json();
+      setData(places);
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    getPlaces();
+  }, []);
+
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Tab One</Text>
-      <View style={styles.separator} lightColor="#eee" darkColor="rgba(255,255,255,0.1)" />
-      <EditScreenInfo path="app/(tabs)/index.tsx" />
+      {isLoading ? (
+        <ActivityIndicator />
+      ) : (
+        <FlatList
+          data={data}
+          keyExtractor={({ id }) => id}
+          renderItem={({ item }) => (           
+            <Link href={{
+              pathname: "/(place)/[id]",
+              params: { 
+                id: item.id,
+                slug: item.slug,
+                title: item.title.rendered
+               }
+            }} asChild>
+              <Pressable>
+              <Image
+                source={{ uri: item.x_featured_media_medium }}
+                style={{ width: 300, height: 200 }}
+              />
+              <Text style={styles.title}>{item.title.rendered}</Text>
+              </Pressable>
+            </Link>
+    
+          )}
+        />
+      )}
     </View>
   );
 }
@@ -16,16 +71,16 @@ export default function TabOneScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  placeCard:{
+    display:'flex',
+    flexDirection:'row',
+    marginTop: 5
   },
   title: {
     fontSize: 20,
-    fontWeight: 'bold',
-  },
-  separator: {
-    marginVertical: 30,
-    height: 1,
-    width: '80%',
+    fontWeight: "bold",
   },
 });
