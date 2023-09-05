@@ -18,12 +18,16 @@ const baseUrl = process.env.EXPO_PUBLIC_BASE_URL;
 export default function Places() {
   const [isLoading, setLoading] = useState(true);
   const [data, setData] = useState<Places[]>([]);
+  const [pagination, setPagination] = useState(1);
 
-  const getPlaces = async () => {
+  const getPlaces = async (page = 1) => {
     try {
-      const response = await fetch(`${baseUrl}/places`);
+      setLoading(true);
+      const response = await fetch(`${baseUrl}/places?page=${page}`);
       const places = await response.json();
-      setData(places);
+      
+      // Соедините старые и новые данные
+      setData(prevData => [...prevData, ...places]);
     } catch (error) {
       console.error(error);
     } finally {
@@ -42,6 +46,11 @@ export default function Places() {
       ) : (
         <FlatList
           data={data}
+          onEndReached={() => {
+            setPagination(prevPage => prevPage + 1); // увеличить страницу
+            getPlaces(pagination + 1); // загрузить данные следующей страницы
+          }}
+          onEndReachedThreshold={0.5}
           keyExtractor={({ id }) => id}
           renderItem={({ item }) => (           
             <Link href={{
@@ -52,12 +61,14 @@ export default function Places() {
                 title: item.title.rendered
                }
             }} asChild>
-              <Pressable>
+              <Pressable style={styles.placeCard}>
               <Image
                 source={{ uri: item.x_featured_media_medium }}
                 style={{ width: 300, height: 200 }}
               />
+              <View style={styles.titleContainer}>
               <Text style={styles.title}>{item.title.rendered}</Text>
+              </View>
               </Pressable>
             </Link>
     
@@ -75,9 +86,16 @@ const styles = StyleSheet.create({
     justifyContent: "center",
   },
   placeCard:{
+    width: '95%',
     display:'flex',
-    flexDirection:'row',
-    marginTop: 5
+    flexDirection:'column',
+    marginBottom: 20,
+    borderWidth: 2,
+    borderRadius: 5,
+  },
+  titleContainer:{
+    paddingVertical: 20,
+    paddingHorizontal:5,
   },
   title: {
     fontSize: 20,
