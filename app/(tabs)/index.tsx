@@ -3,7 +3,7 @@ import { Text, View } from "../../components/Themed";
 import { useEffect, useState } from "react";
 import { Link } from "expo-router";
 
-type Place = {
+type Places = {
   id: string;
   slug: string;
   title: {
@@ -17,7 +17,7 @@ const baseUrl = process.env.EXPO_PUBLIC_BASE_URL;
 
 export default function Places() {
   const [isLoading, setLoading] = useState(true);
-  const [data, setData] = useState<Place[]>([]);
+  const [data, setData] = useState<Places[]>([]);
 
   const getPlaces = async () => {
     try {
