@@ -2,7 +2,7 @@ import { useLocalSearchParams, Stack } from "expo-router";
 import { Text, View } from "../../components/Themed";
 import { useEffect, useState } from "react";
 import { ActivityIndicator, StyleSheet, Image, ScrollView } from "react-native";
-import { IPlace, ImageSizes } from "../../config/types";
+import { IPlace, RenderedText } from "../../config/types";
 
 const baseUrl = process.env.EXPO_PUBLIC_BASE_URL;
 
@@ -10,6 +10,15 @@ export default function Place() {
   const { id } = useLocalSearchParams();
   const [isLoading, setLoading] = useState(true);
   const [data, setData] = useState<IPlace>();
+
+  function decodeHtmlNumericEntities(str: string | undefined) {
+    if (!str) {
+      return '';
+  }
+    return str.replace(/&#(\d+);/g, (match, dec) => {
+        return String.fromCharCode(dec);
+    });
+  }
 
   const getPlace = async () => {
     try {
@@ -30,14 +39,15 @@ export default function Place() {
   return (
     <ScrollView>
     <View style={{ flex: 1, alignItems: "center", justifyContent: "center" }}>
-      <Stack.Screen options={{ title: 'назад' }} />
+      <Stack.Screen options={{ title: 'К списку мест' }} />
       {isLoading ? (
         <ActivityIndicator />
       ) : (
         <View style={styles.content}>
           <Text style={styles.title}>{data?.title.rendered}</Text>
-          <Text>{data?.content.rendered}</Text>
+          <Text>{decodeHtmlNumericEntities(data?.content.rendered)}</Text>
           <View style={styles.gallery}>
+          <Text style={styles.galleryTitle}>Фото</Text>
           {data?.acf.gallery.map(item => (
             <Image style={styles.image} key={item.id} source={{ uri: item.sizes.medium }} />
           ))}
@@ -63,6 +73,12 @@ const styles = StyleSheet.create({
     gap: 5,
     justifyContent: 'center',
     alignItems: 'center',
+  },
+  galleryTitle:{
+    paddingTop: 10,
+    paddingBottom: 15,
+    fontSize: 15,
+    fontWeight: '800'
   },
   image:{
     width: 300,

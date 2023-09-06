@@ -95,7 +95,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
   },
   placeCard:{
-    width: '95%',
+    width: 300,
     display:'flex',
     flexDirection:'column',
     marginBottom: 20,
