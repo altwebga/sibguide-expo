@@ -11,6 +11,7 @@ type Places = {
   };
   region: string[];
   x_featured_media_medium: string;
+  x_featured_media_large: string;
 };
 
 const baseUrl = process.env.EXPO_PUBLIC_BASE_URL;
@@ -68,7 +69,7 @@ export default function Places() {
             }} asChild>
               <Pressable style={styles.placeCard}>
                 <Image
-                  source={{ uri: item.x_featured_media_medium }}
+                  source={{ uri: item.x_featured_media_large }}
                   style={{ width: 300, height: 200 }}
                 />
                 <View style={styles.titleContainer}>
@@ -95,12 +96,18 @@ const styles = StyleSheet.create({
     justifyContent: "center",
   },
   placeCard:{
-    width: 300,
+    padding: 10,
+    width: 320,
     display:'flex',
     flexDirection:'column',
+    alignItems: 'center',
     marginBottom: 20,
-    borderWidth: 2,
+    borderWidth: 1,
     borderRadius: 5,
+    shadowColor: '#171717',
+    shadowOffset: {width: -2, height: 4},
+    shadowOpacity: 0.2,
+    shadowRadius: 3,
   },
   titleContainer:{
     paddingVertical: 20,
