@@ -17,21 +17,26 @@ const baseUrl = process.env.EXPO_PUBLIC_BASE_URL;
 
 export default function Places() {
   const [isLoading, setLoading] = useState(true);
+  const [isFooterLoading, setFooterLoading] = useState(false); // Стейт для индикатора загрузки внизу
   const [data, setData] = useState<Places[]>([]);
   const [pagination, setPagination] = useState(1);
+  const [error, setError] = useState<string | null>(null);
 
   const getPlaces = async (page = 1) => {
     try {
-      setLoading(true);
+      setFooterLoading(true);
       const response = await fetch(`${baseUrl}/places?page=${page}`);
       const places = await response.json();
-      
-      // Соедините старые и новые данные
       setData(prevData => [...prevData, ...places]);
     } catch (error) {
-      console.error(error);
+      if (error instanceof Error) {
+        setError(error.message);
+    } else {
+        setError('Произошла неизвестная ошибка.');
+    }
     } finally {
       setLoading(false);
+      setFooterLoading(false);
     }
   };
 
@@ -62,19 +67,23 @@ export default function Places() {
                }
             }} asChild>
               <Pressable style={styles.placeCard}>
-              <Image
-                source={{ uri: item.x_featured_media_medium }}
-                style={{ width: 300, height: 200 }}
-              />
-              <View style={styles.titleContainer}>
-              <Text style={styles.title}>{item.title.rendered}</Text>
-              </View>
+                <Image
+                  source={{ uri: item.x_featured_media_medium }}
+                  style={{ width: 300, height: 200 }}
+                />
+                <View style={styles.titleContainer}>
+                  <Text style={styles.title}>{item.title.rendered}</Text>
+                </View>
               </Pressable>
             </Link>
-    
           )}
+          ListFooterComponent={() => {
+            return isFooterLoading ? <ActivityIndicator /> : null;
+          }}
         />
       )}
+
+      {error && <Text>{error}</Text>}
     </View>
   );
 }
