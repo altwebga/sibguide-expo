@@ -1,10 +1,15 @@
 import { useLocalSearchParams, Stack } from "expo-router";
 import { Text, View } from "../../components/Themed";
 import { useEffect, useState } from "react";
-import { ActivityIndicator, StyleSheet, Image, ScrollView, Button } from "react-native";
+import {
+  ActivityIndicator,
+  StyleSheet,
+  ScrollView,
+  Pressable,
+} from "react-native";
 import { IPlace, RenderedText } from "../../config/types";
-import ImageList from "../../components/ImageList";
 import ImageView from "react-native-image-viewing";
+import { Ionicons } from '@expo/vector-icons';
 
 const baseUrl = process.env.EXPO_PUBLIC_BASE_URL;
 
@@ -54,7 +59,10 @@ export default function Place() {
           <View style={styles.content}>
             <Text style={styles.title}>{data?.title.rendered}</Text>
             <Text>{decodeHtmlNumericEntities(data?.content.rendered)}</Text>
-            <Button title="Показать фото" onPress={() => setIsVisible(true)} />
+            <Pressable style={styles.btn} onPress={() => setIsVisible(true)}>
+            <Ionicons name="images-outline" size={24} color="black" />
+            <Text>Показать фото</Text>
+            </Pressable>
             <ImageView
               images={images}
               imageIndex={0}
@@ -76,5 +84,16 @@ const styles = StyleSheet.create({
     fontSize: 20,
     fontWeight: "800",
     marginBottom: 15,
+  },
+  btn:{
+    display: 'flex',
+    alignItems: "center",
+    flexDirection:'row',
+    justifyContent: 'center',
+    gap: 10,
+    marginTop: 15,
+    paddingHorizontal: 10,
+    paddingVertical: 20,
+    borderWidth:2,
   }
 });
