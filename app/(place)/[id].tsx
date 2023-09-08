@@ -7,7 +7,7 @@ import {
   ScrollView,
   Pressable,
 } from "react-native";
-import { IPlace, RenderedText } from "../../config/types";
+import { IPlace } from "../../config/types";
 import ImageView from "react-native-image-viewing";
 import { Ionicons } from '@expo/vector-icons';
 
